@@ -11,21 +11,23 @@ from typing import List
 {% set model_plural = model_lower + 's' %}
 class {{ model_name }}Controller:
     @classmethod
-    async def get_{{ model_lower }}s(cls, session: AsyncSession) -> List[{{ model_name }}]:
+{#    async def get_{{ model_lower }}s(cls, session: AsyncSession) -> List[{{ model_name }}]:#}
+    async def get_list(cls, session: AsyncSession) -> List[{{ model_name }}]:
         query = select({{ model_name }})
         result = await session.execute(query)
         {{ model_plural }}: List[{{ model_name }}] = result.scalars().all()
         return {{ model_plural }} or []
 
     @classmethod
-    async def get_{{ model_lower }}(cls, {{ model_lower }}_id: int, session: AsyncSession) -> {{ model_name }}:
+{#    async def get_{{ model_lower }}(cls, {{ model_lower }}_id: int, session: AsyncSession) -> {{ model_name }}:#}
+    async def get_one(cls, {{ model_lower }}_id: int, session: AsyncSession) -> {{ model_name }}:
         query = select({{ model_name }}).where({{ model_name }}.id == {{ model_lower }}_id)
         result = await session.execute(query)
         {{ model_lower }}: {{ model_name }} = result.scalars().first()
         return {{ model_lower }}
 
     @classmethod
-    async def create_{{ model_lower }}(cls, {{ model_lower }}: {{ model_name }}, session: AsyncSession) -> {{ model_name }}:
+    async def create(cls, {{ model_lower }}: {{ model_name }}, session: AsyncSession) -> {{ model_name }}:
         # TODO: review
         session.add({{ model_lower }})
         await session.commit()
@@ -33,14 +35,14 @@ class {{ model_name }}Controller:
         return {{ model_lower }}
 
     @classmethod
-    async def edit_{{ model_lower }}(cls, {{ model_lower }}_id: int, new_{{ model_lower }}: {{ model_name }}, session: AsyncSession) -> {{ model_name }}:
+    async def edit(cls, {{ model_lower }}_id: int, new_{{ model_lower }}: {{ model_name }}, session: AsyncSession) -> {{ model_name }}:
         query = update({{ model_name }}).where({{ model_name }}.id == {{ model_lower }}_id).values(**new_{{ model_lower }}.dict())
         await session.execute(query)
         await session.commit()
         return new_{{ model_lower }}
 
     @classmethod
-    async def delete_{{ model_lower }}(cls, {{ model_lower }}_id: int, session: AsyncSession) -> None:
+    async def delete_one(cls, {{ model_lower }}_id: int, session: AsyncSession) -> None:
         query = delete({{ model_name }}).where({{ model_name }}.id == {{ model_lower }}_id)
         await session.execute(query)
         await session.commit()
