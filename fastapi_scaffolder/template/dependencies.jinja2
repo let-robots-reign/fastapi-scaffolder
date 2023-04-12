@@ -1,0 +1,26 @@
+from typing import AsyncGenerator, NoReturn
+from fastapi import Depends, Request
+from sqlalchemy.ext.asyncio import AsyncSession, create_async_engine
+from sqlalchemy.orm import sessionmaker
+from dotenv import load_dotenv, dotenv_values
+
+config = dotenv_values(".env")
+load_dotenv(".env", override=False)
+
+def getenv(name: str, default=None) -> str:
+    value = os.getenv(name, default)
+    if name in config and config[name]:
+        value = config[name]
+    return value
+
+DATABASE_URL = getenv("DATABASE_URL")
+engine = create_async_engine(DATABASE_URL, echo=False, future=True)
+
+async def get_session() -> AsyncGenerator[AsyncSession, None]:
+    async_session = sessionmaker(engine, class_=AsyncSession, expire_on_commit=False)
+    async with async_session() as session:
+        yield session
+
+async def global_get_session(request: Request, session: AsyncSession = Depends(get_session)) -> NoReturn:
+    request.state.session = session
+

@@ -1,9 +1,10 @@
 from __future__ import annotations
 
-from fastapi import FastAPI
+from fastapi import FastAPI, Request, Depends
 
 {{ imports }}
 
+from .dependencies import global_get_session
 from .controllers import *
 
 app = FastAPI(
@@ -13,10 +14,8 @@ app = FastAPI(
     {{ key }} = {{ info_value }},
     {% endfor %}
     {% endif %}
-    )
-
-session = None # TODO: get session for queries
-
+    dependencies=[Depends(global_get_session)]
+)
 
 {% for operation in operations %}
 @app.{{ operation.type }}('{{ operation.snake_case_path }}', response_model={{ operation.response }}
@@ -34,7 +33,7 @@ session = None # TODO: get session for queries
     {% if operation.tags %}
     , tags={{ operation.tags }}
     {% endif %})
-async def {{ operation.function_name }}({{ operation.snake_case_arguments }}) -> {{ operation.return_type }}:
+async def {{ operation.function_name }}(request: Request, {{ operation.snake_case_arguments }}) -> {{ operation.return_type }}:
     {%- if operation.summary %}
     """
     {{ operation.summary }}
@@ -43,5 +42,10 @@ async def {{ operation.function_name }}({{ operation.snake_case_arguments }}) ->
     {% set controller_name = get_controller_name(operation) %}
     {% set controller_arguments = get_controller_arguments(operation) %}
     {% set method_name = get_method_name(operation) %}
+    {% if controller_name %}
     return await {{ controller_name }}.{{ method_name }}({{ controller_arguments }})
+    {% else %}
+    # Couldn't derive controller name, check your OpenAPI file
+    # Add "operationId" or "tags" fields to the YML file if not present
+    {% endif %}
 {% endfor %}
