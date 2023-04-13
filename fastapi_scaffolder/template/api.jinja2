@@ -17,6 +17,12 @@ app = FastAPI(
     dependencies=[Depends(global_get_session)]
 )
 
+{% if models %}
+@app.get("/models/list")
+async def get_models_list() -> List[str]:
+    return {{ models }}
+{% endif %}
+
 {% for operation in operations %}
 @app.{{ operation.type }}('{{ operation.snake_case_path }}', response_model={{ operation.response }}
     {% if operation.additional_responses %}

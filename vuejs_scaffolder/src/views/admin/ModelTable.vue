@@ -1,9 +1,10 @@
 <template>
-  <div>Models Card</div>
+  <div>Table</div>
 </template>
 
 <script setup>
 </script>
 
 <style lang="scss" scoped>
+
 </style>

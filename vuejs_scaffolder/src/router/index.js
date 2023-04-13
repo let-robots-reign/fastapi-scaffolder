@@ -1,13 +1,17 @@
-import { createRouter, createWebHistory } from 'vue-router'
-import ModelsList from "@/views/ModelsList.vue";
+import { createRouter, createWebHistory } from "vue-router"
 
 const router = createRouter({
   history: createWebHistory(import.meta.env.BASE_URL),
   routes: [
     {
-      path: '/',
-      name: 'Models List',
-      component: ModelsList
+      path: "/",
+      name: "Models List",
+      component: () => import("@/views/admin/ModelsList.vue"),
+    },
+    {
+      path: "/:modelName/list",
+      name: "Model Table",
+      component: () => import("@/views/admin/ModelTable.vue"),
     },
   ]
 })
