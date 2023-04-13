@@ -1,6 +1,9 @@
-import axios from "axios";
+import axios, { type AxiosInstance } from "axios";
 
 class Api {
+  protected readonly baseUrl: string;
+  protected readonly instance: AxiosInstance;
+
   constructor() {
     this.baseUrl = import.meta.env.BASE_URL;
     this.instance = axios.create({
@@ -15,8 +18,10 @@ class Api {
 }
 
 class AdminApi extends Api {
-  constructor(props) {
-    super(props);
+  private readonly urlPrefix: string;
+
+  constructor() {
+    super();
     this.urlPrefix = "/admin";
   }
 
@@ -24,23 +29,23 @@ class AdminApi extends Api {
     return await this.instance.get(`${this.urlPrefix}/models/list`);
   }
 
-  async list(modelName) {
+  async list(modelName: string) {
     return await this.instance.get(`${this.urlPrefix}/${modelName}`);
   }
 
-  async getOne(modelName, modelId) {
+  async getOne(modelName: string, modelId: number) {
     return await this.instance.get(`${this.urlPrefix}/${modelName}/${modelId}`);
   }
 
-  async create(modelName, modelObject) {
+  async create(modelName: string, modelObject: object) {
     return await this.instance.post(`${this.urlPrefix}/${modelName}`, modelObject);
   }
 
-  async edit(modelName, modelId, modelObject) {
+  async edit(modelName: string, modelId: number, modelObject: object) {
     return await this.instance.put(`${this.urlPrefix}/${modelName}/${modelId}`, modelObject);
   }
 
-  async delete(modelName, modelId) {
+  async delete(modelName: string, modelId: number) {
     return await this.instance.delete(`${this.urlPrefix}/${modelName}/${modelId}`);
   }
 }

@@ -1,8 +1,6 @@
-import { createApp } from "vue"
-import { createPinia } from "pinia"
-
-import App from "./App.vue"
-import router from "./router"
+import { createApp } from 'vue'
+import App from './App.vue'
+import router from './router'
 
 import "./assets/main.css"
 import "ant-design-vue/dist/antd.css"
@@ -27,7 +25,7 @@ import {
   Alert
 } from "ant-design-vue";
 
-const app = createApp(App);
+const app = createApp(App)
 app.use(Button);
 app.use(Layout);
 app.use(Row);
@@ -42,8 +40,6 @@ app.use(Select);
 app.use(Empty);
 app.use(Table);
 app.use(Alert);
+app.use(router);
 
-app.use(createPinia())
-app.use(router)
-
-app.mount("#app")
+app.mount('#app');

@@ -14,23 +14,31 @@
   </a-layout>
 </template>
 
-<script setup>
-// import api from "@/api/api";
+<script lang="ts">
+import { Component, Vue } from "vue-facing-decorator";
 import ModelCard from "@/components/ModelCard.vue";
-import { ref } from "vue";
+// import api from "@/api/api";
 
-const modelsList = ref([]);
-const getModelsList = async () => {
-  try {
-    // const res = await api.admin.modelsList();
-    // modelsList.value = res.data;
-    modelsList.value = ["User", "Doctor", "Pet"];
-  } catch (e) {
-    console.log("Error getting models list:", e);
+@Component({
+  components: { ModelCard }
+})
+export default class ModelsList extends Vue {
+  modelsList: string[] = [];
+
+  async getModelsList() {
+    try {
+      // const res = await api.admin.modelsList();
+      // this.modelsList = res.data;
+      this.modelsList = ["User", "Doctor", "Pet"];
+    } catch (e) {
+      console.log("Error getting models list:", e);
+    }
   }
-};
 
-getModelsList();
+  created() {
+    this.getModelsList();
+  }
+}
 </script>
 
 <style lang="scss" scoped>

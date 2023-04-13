@@ -5,17 +5,23 @@
   </div>
 </template>
 
-<script setup>
+<script lang="ts">
+import { Component, Prop, Emit, Vue } from "vue-facing-decorator";
 import { ArrowRightOutlined } from "@ant-design/icons-vue";
 
-defineProps({
-  name: {
+@Component({
+  components: { ArrowRightOutlined }
+})
+export default class ModelCard extends Vue {
+  @Prop({
     required: true,
     type: String,
-  },
-});
+  })
+  name!: string
 
-defineEmits(["click"]);
+  @Emit("click")
+  private click(): void {}
+}
 </script>
 
 <style lang="scss" scoped>
