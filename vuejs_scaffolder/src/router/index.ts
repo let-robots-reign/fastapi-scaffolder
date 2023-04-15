@@ -13,6 +13,11 @@ const router = createRouter({
       name: "Model Table",
       component: () => import("@/views/admin/ModelTable.vue"),
     },
+    {
+      path: "/:modelName/:id",
+      name: "Model Item",
+      component: () => import("@/views/admin/ModelItem.vue"),
+    },
   ]
 });
 

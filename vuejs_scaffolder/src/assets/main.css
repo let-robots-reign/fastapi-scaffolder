@@ -12,6 +12,13 @@ a,
   min-height: 100vh !important;
 }
 
+.heading {
+  font-size: 36px;
+  line-height: 40px;
+  margin-bottom: 32px;
+  font-weight: 700;
+}
+
 @media (hover: hover) {
   a:hover {
     background-color: hsla(160, 100%, 37%, 0.2);

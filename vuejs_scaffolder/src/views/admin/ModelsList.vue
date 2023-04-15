@@ -45,11 +45,4 @@ export default class ModelsList extends Vue {
 .main-row {
   padding-top: 50px;
 }
-
-.heading {
-  font-size: 36px;
-  line-height: 40px;
-  margin-bottom: 32px;
-  font-weight: 700;
-}
 </style>
