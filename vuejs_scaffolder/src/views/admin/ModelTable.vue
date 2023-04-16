@@ -104,6 +104,7 @@ export default class ModelTable extends Vue {
     }
     this.selectedRows.splice(0);
   }
+
   toggleSelectRow(rowID: number, push = true) {
     if (push) {
       this.selectedRows.push(rowID);

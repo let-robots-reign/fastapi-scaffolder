@@ -37,6 +37,10 @@ class AdminApi extends Api {
     return await this.instance.get(`${this.urlPrefix}/${modelName}/${modelId}`);
   }
 
+  async getModelSchema(modelName: string) {
+    return await this.instance.get(`${this.urlPrefix}/${modelName}/schema`);
+  }
+
   async create(modelName: string, modelObject: object) {
     return await this.instance.post(`${this.urlPrefix}/${modelName}`, modelObject);
   }
