@@ -14,6 +14,11 @@ const router = createRouter({
       component: () => import("@/views/admin/ModelTable.vue"),
     },
     {
+      path: "/:modelName/create",
+      name: "Create Model Item",
+      component: () => import("@/views/admin/ModelItem.vue"),
+    },
+    {
       path: "/:modelName/:id",
       name: "Model Item",
       component: () => import("@/views/admin/ModelItem.vue"),

@@ -47,6 +47,10 @@ export default {
       type: Boolean,
       default: false,
     },
+    danger: {
+      type: Boolean,
+      default: false,
+    },
     disabled: {
       type: Boolean,
       default: false,
@@ -83,6 +87,7 @@ export default {
         `button_${this.type}`,
         `button_${this.size}`,
         {
+          button_danger: this.danger,
           button_disabled: this.disabled,
           "button_width-auto": this.widthAuto,
           "button_full-width": this.fullWidth,
@@ -140,12 +145,24 @@ export default {
     }
   }
 
-  &_primary&_disabled {
-    color: rgba(255, 255, 255, 0.5);
-    background: #acbedf;
+  &_danger {
+    background-color: #dc0050;
+    color: #fff;
+    cursor: pointer;
 
     &:hover {
-      cursor: default;
+      background-color: #b90041;
+    }
+  }
+
+  &_primary {
+    &._disabled {
+      color: rgba(255, 255, 255, 0.5);
+      background: #acbedf;
+
+      &:hover {
+        cursor: default;
+      }
     }
   }
 

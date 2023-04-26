@@ -3,35 +3,55 @@
     <base-section with-padding>
       <a-row type="flex" justify="center">
         <a-col :xs="20">
-          <h1 class="heading">Элемент {{ modelName }} #{{ itemId }}</h1>
+          <div v-if="formMode !== 'create'" class="heading-box">
+            <h1 class="heading" >
+              Элемент {{ modelName }} #{{ itemId }}
+            </h1>
+            <base-button
+              class="button"
+              size="large"
+              danger
+              @click="deleteItem"
+            >
+              Удалить элемент
+            </base-button>
+          </div>
+          <h1 class="heading" v-else>Создание элемента {{ modelName }}</h1>
         </a-col>
         <a-col :xs="20">
           <a-form
             :model="itemData"
             name="form"
+            ref="form"
             layout="vertical"
-            @finish="submit"
-            @finishFailed="processError"
           >
-            <a-form-item
+            <template
               v-for="item in schema.fields"
               :key="item.model"
-              :label="item.label"
-              :rules="getItemRules(item)"
             >
-              <component
-                :is="`a-${item.type}`"
-                :value="itemData[item.model]"
-                :checked="!!itemData[item.model]"
-                @change="(arg) => changeField(item, arg)"
-                :placeholder="item.placeholder || ''"
-                :disabled="item.disabled || false"
-                :options="item.options?.map((op) => ({ value: op, label: op })) || []"
+              <a-form-item
+                v-if="!(formMode === 'create' && item.disabled)"
+                :label="item.label"
+                :rules="getItemRules(item)"
               >
-                {{ itemData[item.model] }}
-              </component>
-            </a-form-item>
+                <component
+                  :is="`a-${item.type}`"
+                  :value="itemData[item.model]"
+                  :checked="!!itemData[item.model]"
+                  @change="(arg) => changeField(item, arg)"
+                  :placeholder="item.placeholder || ''"
+                  :disabled="item.disabled || false"
+                  :options="item.options?.map((op) => ({ value: op, label: op })) || []"
+                >
+                  {{ itemData[item.model] }}
+                </component>
+              </a-form-item>
+            </template>
           </a-form>
+        </a-col>
+        <a-col :xs="20">
+          <base-button class="button" size="large" @click="submit">Сохранить</base-button>
+          <base-button class="button" type="secondary" size="large" @click="cancelClicked">Отменить</base-button>
         </a-col>
       </a-row>
     </base-section>
@@ -40,27 +60,31 @@
 
 <script lang="ts">
 import { Component, Vue } from "vue-facing-decorator";
-import { useRoute } from "vue-router";
+import { type Router, useRoute, useRouter} from "vue-router";
 import BaseSection from "@/components/BaseSection.vue";
 import { capitalize } from "@/utils/stringUtils";
+import BaseButton from "@/components/BaseButton.vue";
 
 // TODO: types, multiple selection in a-select, create form component
 
 @Component({
-  components: {BaseSection}
+  components: { BaseButton, BaseSection}
 })
 export default class ModelItem extends Vue {
   modelName = capitalize(useRoute().params.modelName as string);
-  itemId: number = parseInt(useRoute().params.id as string);
+  itemId: number = parseInt(useRoute().params?.id as string);
   itemData: any = {};
   schema: Object = {};
+  router: Router = useRouter();
+
+  get formMode() {
+    return this.itemId ? "edit" : "create";
+  }
 
   async getItem() {
     try {
       // const itemRes = await api.admin.getOne(this.modelName, this.itemId);
       // this.itemData = itemRes.data;
-      // const schemaRes = await api.admin.getModelSchema(this.modelName);
-      // this.schema = schemaRes.data;
       this.itemData = {
         id: 1,
         name: "John Doe",
@@ -68,6 +92,15 @@ export default class ModelItem extends Vue {
         email: "john.doe@gmail.com",
         status: true
       };
+    } catch (e) {
+      console.log(e);
+    }
+  }
+
+  async getModelSchema() {
+    try {
+      // const schemaRes = await api.admin.getModelSchema(this.modelName);
+      // this.schema = schemaRes.data;
       this.schema = {
         fields: [
           {
@@ -132,20 +165,39 @@ export default class ModelItem extends Vue {
     this.itemData[item.model] = arg?.target?.value ?? arg;
   }
 
+  cancelClicked() {
+    this.router.back();
+  }
+
   submit() {
     console.log("Submit!");
+  }
+
+  deleteItem() {
+    console.log("Delete item!");
   }
 
   processError() {
     console.log("Error!");
   }
 
-  created() {
-    this.getItem();
+  async created() {
+    await this.getModelSchema();
+    if (this.formMode !== "create") {
+      await this.getItem();
+    }
   }
 }
 </script>
 
 <style lang="scss" scoped>
+.heading-box {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
 
+.button {
+  margin-right: 20px;
+}
 </style>
