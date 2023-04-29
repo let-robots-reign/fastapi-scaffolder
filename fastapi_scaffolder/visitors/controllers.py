@@ -6,9 +6,9 @@ from fastapi_scaffolder.visitor import Visitor
 import inflect
 
 
-class ControllersVisitor:
-    def __init__(self, inflect_engine: inflect.engine):
-        self.inflect_engine = inflect_engine
+class ControllersVisitor(Visitor):
+    def __init__(self):
+        self.inflect_engine = inflect.engine()
         self.models_names = []
 
     def get_singular_of_word(self, word) -> str:
@@ -78,11 +78,8 @@ class ControllersVisitor:
             "get_method_name": self.get_method_name
         }
 
-
-def get_controllers_vars(parser: OpenAPIParser, *args) -> Dict[str, object]:
-    p = inflect.engine()
-    controller_visitor = ControllersVisitor(p)
-    return controller_visitor.get_template_vars(parser)
+    def __call__(self, parser: OpenAPIParser, *args) -> Dict[str, object]:
+        return self.get_template_vars(parser)
 
 
-visit: Visitor = get_controllers_vars
+visit: Visitor = ControllersVisitor()

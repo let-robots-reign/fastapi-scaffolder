@@ -9,7 +9,7 @@ from fastapi_scaffolder.parser import OpenAPIParser
 from fastapi_scaffolder.visitor import Visitor
 
 
-class ImportsVisitor:
+class ImportsVisitor(Visitor):
     @classmethod
     def _get_most_of_reference(cls, data_type: DataType) -> Optional[Reference]:
         if data_type.reference:
@@ -35,10 +35,8 @@ class ImportsVisitor:
             imports[from_].update(imports_)
         return {'imports': imports}
 
-
-def get_imports(parser: OpenAPIParser, model_path: Path) -> Dict[str, object]:
-    imports_controller = ImportsVisitor()
-    return imports_controller.get_imports(parser, model_path)
+    def __call__(self, parser: OpenAPIParser, model_path: Path) -> Dict[str, object]:
+        return self.get_imports(parser, model_path)
 
 
-visit: Visitor = get_imports
+visit: Visitor = ImportsVisitor()
