@@ -3,7 +3,7 @@
     v-if="href"
     :href="href"
     :target="target"
-    :class="getButtonClasses"
+    :class="buttonClasses"
     :style="cssVars"
     @click="(event) => !disabled && $emit('click', event)"
   >
@@ -11,7 +11,7 @@
   </a>
   <button
     v-else
-    :class="getButtonClasses"
+    :class="buttonClasses"
     :style="cssVars"
     @click="(event) => !disabled && $emit('click', event)"
   >
@@ -19,83 +19,105 @@
   </button>
 </template>
 
-<script>
-export default {
-  name: "BaseButton",
-  props: {
-    type: {
-      type: String,
-      default: "primary",
-      validator: (type) => ["primary", "secondary"].includes(type),
-    },
-    size: {
-      type: String,
-      default: "default",
-      validator: (type) => ["large", "default"].includes(type),
-    },
-    href: {
-      type: String,
-    },
-    target: {
-      type: String,
-    },
-    widthAuto: {
-      type: Boolean,
-      default: false,
-    },
-    fullWidth: {
-      type: Boolean,
-      default: false,
-    },
-    danger: {
-      type: Boolean,
-      default: false,
-    },
-    disabled: {
-      type: Boolean,
-      default: false,
-    },
-    fontSize: {
-      type: String,
-    },
-    fontWeight: {
-      type: String,
-    },
-    height: {
-      type: String,
-    },
-    borderRadius: {
-      type: String,
-    },
-  },
+<script lang="ts">
+import { Component, Prop, Vue } from "vue-facing-decorator";
+
+@Component({
   emits: ["click"],
-  computed: {
-    cssVars() {
-      return {
-        "--font-size":
-          this.fontSize || (this.size === "large" ? "12px" : "10px"),
-        "--font-weight":
-          this.fontWeight || (this.size === "large" ? "600" : "500"),
-        "--height": this.height || (this.size === "large" ? "35px" : "30px"),
-        "--border-radius":
-          this.borderRadius || (this.size === "large" ? "10px" : "6px"),
-      };
-    },
-    getButtonClasses() {
-      return [
-        "button",
-        `button_${this.type}`,
-        `button_${this.size}`,
-        {
-          button_danger: this.danger,
-          button_disabled: this.disabled,
-          "button_width-auto": this.widthAuto,
-          "button_full-width": this.fullWidth,
-        },
-      ];
-    },
-  },
-};
+})
+export default class BaseButton extends Vue {
+  @Prop({
+    type: String,
+    default: "primary",
+  })
+  type?: string;
+
+  @Prop({
+    type: String,
+    default: "default",
+  })
+  size?: string;
+
+  @Prop({
+    type: String
+  })
+  href?: string;
+
+  @Prop({
+    type: String
+  })
+  target?: string;
+
+  @Prop({
+    type: Boolean,
+    default: false,
+  })
+  widthAuto?: boolean;
+
+  @Prop({
+    type: Boolean,
+    default: false,
+  })
+  fullWidth?: boolean;
+
+  @Prop({
+    type: Boolean,
+    default: false,
+  })
+  danger?: boolean;
+
+  @Prop({
+    type: Boolean,
+    default: false,
+  })
+  disabled?: boolean;
+
+  @Prop({
+    type: String
+  })
+  fontSize?: string;
+
+  @Prop({
+    type: String
+  })
+  fontWeight?: string;
+
+  @Prop({
+    type: String
+  })
+  height?: string;
+
+  @Prop({
+    type: String
+  })
+  borderRadius?: string;
+
+  get cssVars() {
+    return {
+      "--font-size":
+        this.fontSize || (this.size === "large" ? "12px" : "10px"),
+      "--font-weight":
+        this.fontWeight || (this.size === "large" ? "600" : "500"),
+      "--height": this.height || (this.size === "large" ? "35px" : "30px"),
+      "--border-radius":
+        this.borderRadius || (this.size === "large" ? "10px" : "6px"),
+    };
+  }
+
+  get buttonClasses() {
+    return [
+      "button",
+      `button_${this.type}`,
+      `button_${this.size}`,
+      {
+        button_danger: this.danger,
+        button_disabled: this.disabled,
+        "button_width-auto": this.widthAuto,
+        "button_full-width": this.fullWidth,
+      },
+    ];
+  }
+}
 </script>
 
 <style lang="scss" scoped>

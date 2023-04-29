@@ -1,7 +1,7 @@
 <template>
   <a-layout class="main-layout table-layout">
     <base-section with-padding>
-      <a-row type="flex" justify="space-between" align="middle">
+      <a-row type="flex" justify="space-between" align="middle" :style="{ marginBottom: '40px' }">
         <a-col :xs="15" :offset="2">
           <h1 class="heading">Список элементов модели {{ modelName }}</h1>
         </a-col>
@@ -49,7 +49,7 @@ interface ModelElement {
 }
 
 @Component({
-  components: {BaseButton, BaseSection, BaseTable }
+  components: { BaseButton, BaseSection, BaseTable }
 })
 export default class ModelTable extends Vue {
   data: ModelElement[] = [];
@@ -141,5 +141,9 @@ export default class ModelTable extends Vue {
 <style lang="scss" scoped>
 .table-layout {
   padding-top: 50px;
+}
+
+.heading {
+  margin: 0;
 }
 </style>

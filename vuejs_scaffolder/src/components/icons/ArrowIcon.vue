@@ -17,20 +17,26 @@
   </div>
 </template>
 
-<script setup>
-defineProps({
-  color: {
+<script lang="ts">
+import { Component, Prop, Vue } from "vue-facing-decorator";
+
+@Component
+export default class ArrowIcon extends Vue {
+  @Prop({
     type: String,
     default: "#2d2d2d4d"
-  },
-  orientation: {
+  })
+  color!: string;
+
+  @Prop({
     type: String,
     default: "up",
     validator(value) {
       return ["up", "down", "left", "right"].includes(value);
     },
-  }
-});
+  })
+  orientation!: string;
+}
 </script>
 
 <style lang="scss" scoped>

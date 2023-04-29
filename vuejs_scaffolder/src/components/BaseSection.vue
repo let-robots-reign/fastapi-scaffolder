@@ -8,16 +8,17 @@
   </section>
 </template>
 
-<script>
-export default {
-  name: "BaseSection",
-  props: {
-    withPadding: {
-      type: Boolean,
-      default: true,
-    },
-  },
-};
+<script lang="ts">
+import { Component, Prop, Vue } from "vue-facing-decorator";
+
+@Component
+export default class BaseSection extends Vue {
+  @Prop({
+    type: Boolean,
+    default: true,
+  })
+  withPadding?: boolean;
+}
 </script>
 
 <style lang="scss" scoped>

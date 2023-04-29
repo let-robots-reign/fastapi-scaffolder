@@ -54,49 +54,67 @@
   </div>
 </template>
 
-<script setup>
-import { computed, ref } from "vue";
-
+<script lang="ts">
+import { Component, Prop, Vue } from "vue-facing-decorator";
+import ArrowIcon from "@/components/icons/ArrowIcon.vue";
 import vClickOutside from "@/directives/clickOutside";
 
-import ArrowIcon from "@/components/icons/ArrowIcon.vue";
+type Option = {
+  label: string,
+  value: string | number,
+}
 
-const props = defineProps({
-  modelValue: {
-    type: String,
-  },
+@Component({
+  components: { ArrowIcon },
+  emits: ["change", "update:model-value"],
+  directives: { clickOutside: vClickOutside },
+})
+export default class BaseSelect extends Vue {
+  @Prop({
+    type: String
+  })
+  modelValue?: string;
+
   // format of options: [{label: "", value: ...}]
   // if Array of primitives is passed, it is converted
-  options: {
+  @Prop({
     type: Array,
-    default: () => [],
-  },
-  placeholder: {
+    default: () => []
+  })
+  options?: Option[] | string[] | number[];
+
+  @Prop({
     type: String,
     default: "",
-  },
-  disabled: {
+  })
+  placeholder?: string;
+
+  @Prop({
     type: Boolean,
     default: false,
-  },
-});
+  })
+  disabled?: boolean;
 
-const emit = defineEmits(["change", "update:model-value"]);
-
-const showDropdown = ref(false);
-const toggleDropdown = () => (showDropdown.value = !showDropdown.value);
-const formattedOptions = computed(() => {
-  if (props.options?.length && typeof props.options[0] === "object") {
-    return props.options;
+  showDropdown = false;
+  toggleDropdown() {
+    this.showDropdown = !this.showDropdown;
   }
-  return props.options.map((op) => ({ label: op, value: op }));
-});
-const chosenOption = computed(() => formattedOptions.value.find((op) => op.value === props.modelValue));
-const selectOption = (option) => {
-  emit("change", option.value);
-  emit("update:model-value", option.value);
-  showDropdown.value = false;
-};
+
+  get formattedOptions() {
+    if (this.options?.length && this.options[0] instanceof Option) {
+      return this.options as Option[];
+    }
+    return this.options!.map((op) => ({ label: op, value: op }));
+  }
+  get chosenOption() {
+    return this.formattedOptions.find((op) => op.value === this.modelValue);
+  }
+  selectOption(option: Option) {
+    this.$emit("change", option.value);
+    this.$emit("update:model-value", option.value);
+    this.showDropdown = false;
+  }
+}
 </script>
 
 <style lang="scss" scoped>

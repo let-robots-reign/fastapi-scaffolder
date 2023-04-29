@@ -79,95 +79,127 @@
   </div>
 </template>
 
-<script setup>
-import { computed, reactive, useSlots, watch } from "vue";
-
+<script lang="ts">
+import { useSlots } from "vue";
+import { Component, Prop, Vue, Watch } from "vue-facing-decorator";
 import BaseCheckbox from "@/components/BaseCheckbox.vue";
 import BaseSpinner from "@/components/BaseSpinner.vue";
 import ArrowIcon from "@/components/icons/ArrowIcon.vue";
 import Pagination from "@/components/Pagination.vue";
 import consts from "@/utils/consts";
 
-const props = defineProps({
-  columns: {
+type Column = {
+  title: string,
+  field: string,
+  slot: string,
+};
+
+@Component({
+  components: { BaseCheckbox, BaseSpinner, ArrowIcon, Pagination },
+  emits: ["row-checked-change", "table-changed"],
+})
+export default class BaseTable extends Vue {
+  @Prop({
     required: true,
     type: Array,
-  },
-  data: {
+  })
+  columns!: Column[];
+
+  @Prop({
     type: Array,
     default: () => [],
-  },
-  total: {
+  })
+  data?: any[];
+
+  @Prop({
     type: Number,
     default: 0,
-  },
-  withPagination: {
+  })
+  total?: number;
+
+  @Prop({
     type: Boolean,
     default: true,
-  },
-  defaultPageSize: {
+  })
+  withPagination?: boolean;
+
+  @Prop({
     type: Number,
     default: consts.DEFAULT_PAGE_SIZE,
-  },
-  loading: {
+  })
+  defaultPageSize?: number;
+
+  @Prop({
     type: Boolean,
     default: false,
-  },
-  selectedRows: {
+  })
+  loading?: boolean;
+
+  @Prop({
     type: Array,
     default: undefined,
-  },
-  rowIdField: {
+  })
+  selectedRows?: number[] | undefined;
+
+  @Prop({
     type: String,
     default: "id",
-  },
-});
+  })
+  rowIdField?: string;
 
-const emit = defineEmits(["row-checked-change", "table-changed"]);
+  slots = useSlots();
+  sorterDirs = ["asc", "desc", ""];
+  currentSorter = {
+    field: "",
+    direction: "",
+  };
+  tableParams = {
+    sort: this.currentSorter,
+    pagination: {
+      currentPage: 1,
+      pageSize: this.defaultPageSize,
+    },
+  };
 
-// convert to set to faster checks
-const rowSelection = computed(() => Array.isArray(props.selectedRows));
-const selectedRowsSet = computed(() => new Set(props.selectedRows ?? []));
-
-const hasSlot = (column) => {
-  return column.slot && Object.keys(useSlots()).includes(column.slot);
-};
-
-const sorterDirs = ["asc", "desc", ""];
-const currentSorter = reactive({
-  field: "",
-  direction: "",
-});
-const tableParams = reactive({
-  sort: currentSorter,
-  pagination: {
-    currentPage: 1,
-    pageSize: props.defaultPageSize,
-  },
-});
-const pagesCount = computed(() => {
-  const pageSize = tableParams.pagination?.pageSize;
-  if (!pageSize) {
-    return 1;
+  get pagesCount() {
+    const pageSize = this.tableParams.pagination?.pageSize;
+    if (!pageSize || !this.total || !this.tableParams.pagination.pageSize) {
+      return 1;
+    }
+    return Math.ceil(this.total / this.tableParams.pagination.pageSize);
   }
-  return Math.ceil(props.total / tableParams.pagination.pageSize);
-});
 
-const toggleSorter = (column) => {
-  if (column.field !== currentSorter.field) {
-    // different field was chosen, first sort is in ascending order
-    currentSorter.direction = "asc";
-  } else {
-    currentSorter.direction =
-      sorterDirs[
-        (sorterDirs.indexOf(currentSorter.direction) + 1) % sorterDirs.length
-      ];
+  get rowSelection() {
+    return Array.isArray(this.selectedRows);
   }
-  currentSorter.field = column.field;
-  // tableParams.sort = `${currentSorter.field}:${currentSorter.direction}`;
-};
 
-watch(tableParams, (newParams) => emit("table-changed", newParams));
+  get selectedRowsSet() {
+    return new Set(this.selectedRows ?? []);
+  }
+
+  hasSlot(column: Column) {
+    return column.slot && Object.keys(this.slots).includes(column.slot);
+  }
+
+  toggleSorter(column: Column) {
+    if (column.field !== this.currentSorter.field) {
+      // different field was chosen, first sort is in ascending order
+      this.currentSorter.direction = "asc";
+    } else {
+      this.currentSorter.direction =
+        this.sorterDirs[
+          (this.sorterDirs.indexOf(this.currentSorter.direction) + 1) % this.sorterDirs.length
+        ];
+    }
+    this.currentSorter.field = column.field;
+    // tableParams.sort = `${currentSorter.field}:${currentSorter.direction}`;
+  }
+
+  @Watch("tableParams")
+  watchTableParams(newParams: typeof this.tableParams) {
+    this.$emit("table-changed", newParams);
+  }
+}
 </script>
 
 <style lang="scss" scoped>

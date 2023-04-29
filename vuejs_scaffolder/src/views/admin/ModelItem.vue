@@ -195,6 +195,11 @@ export default class ModelItem extends Vue {
   display: flex;
   justify-content: space-between;
   align-items: center;
+  margin-bottom: 40px;
+}
+
+.heading {
+  margin: 0;
 }
 
 .button {

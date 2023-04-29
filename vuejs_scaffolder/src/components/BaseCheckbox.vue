@@ -12,47 +12,56 @@
   </label>
 </template>
 
-<script>
-export default {
-  props: {
-    value: {
-      type: String,
-      default: "",
-    },
-    modelValue: {
-      type: [Array, Boolean],
-      default: false,
-    },
-    label: {
-      type: String,
-      default: "",
-    },
-  },
+<script lang="ts">
+import { Component, Vue, Prop } from "vue-facing-decorator";
+
+interface CheckboxEvent extends Event {
+  target: HTMLInputElement;
+}
+
+@Component({
   emits: ["change", 'update:model-value'],
-  computed: {
-    isChecked() {
-      if (this.modelValue instanceof Array) {
-        return this.modelValue.includes(this.value);
-      }
-      return this.modelValue;
+})
+export default class BaseCheckbox extends Vue {
+  @Prop({
+    type: String,
+    default: "",
+  })
+  value?: string;
+
+  @Prop({
+    type: [Array, Boolean],
+    default: false,
+  })
+  modelValue?: string[] | boolean;
+
+  @Prop({
+    type: String,
+    default: "",
+  })
+  label?: string;
+
+  get isChecked() {
+    if (this.value && this.modelValue instanceof Array) {
+      return this.modelValue.includes(this.value);
     }
-  },
-  methods: {
-    updateInput(event) {
-      let isChecked = event.target.checked;
-      if (this.modelValue instanceof Array) {
-        let newValue = [...this.modelValue];
-        if (isChecked) {
-          newValue.push(this.value);
-        } else {
-          newValue.splice(newValue.indexOf(this.value), 1);
-        }
-        this.$emit("change", newValue);
-        this.$emit("update:model-value", newValue);
+    return this.modelValue;
+  }
+
+  updateInput(event: CheckboxEvent) {
+    let isChecked = event.target.checked;
+    if (this.value && this.modelValue instanceof Array) {
+      let newValue = [...this.modelValue];
+      if (isChecked) {
+        newValue.push(this.value);
       } else {
-        this.$emit("change", isChecked);
-        this.$emit("update:model-value", isChecked);
+        newValue.splice(newValue.indexOf(this.value), 1);
       }
+      this.$emit("change", newValue);
+      this.$emit("update:model-value", newValue);
+    } else {
+      this.$emit("change", isChecked);
+      this.$emit("update:model-value", isChecked);
     }
   }
 }

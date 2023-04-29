@@ -3,7 +3,7 @@
     <base-select
       :model-value="pageSize"
       class="pagination__select"
-      :options="consts.FUNDS_PAGE_SIZE_OPTIONS"
+      :options="pageSizeOptions"
       @update:model-value="changePageSize"
     >
       <template #chosen-option="{ option }">
@@ -41,62 +41,76 @@
   </div>
 </template>
 
-<script setup>
-import { computed, ref, watch } from "vue";
-
+<script lang="ts">
+import { Component, Vue, Prop, Watch } from "vue-facing-decorator";
 import BaseSelect from "@/components/BaseSelect.vue";
 import ArrowIcon from "@/components/icons/ArrowIcon.vue";
 import consts from "@/utils/consts";
 
-const props = defineProps({
-  pagesCount: {
+@Component({
+  components: { BaseSelect, ArrowIcon },
+  emits: ["change-page", "change-page-size"],
+})
+export default class Pagination extends Vue {
+  @Prop({
     type: Number,
     default: 1,
-  },
-  defaultPageSize: {
+  })
+  pagesCount!: number;
+  
+  @Prop({
     type: Number,
     default: consts.DEFAULT_PAGE_SIZE,
-  },
-});
+  })
+  defaultPageSize!: number;
 
-const emit = defineEmits(["change-page", "change-page-size"]);
-
-const currentPage = ref(1);
-const pageSize = ref(props.defaultPageSize.toString());
-const pagesElements = computed(() => {
-  let pages = Array.from(Array(props.pagesCount), (e, i) => ++i);
-  if (props.pagesCount > 5) {
-    // 1 ... 8 9 10
-    if (currentPage.value > props.pagesCount - 3) {
-      return [1, "...", ...pages.slice(pages.length - 3, pages.length)];
+  @Prop({
+    type: Array,
+    default: consts.DEFAULT_PAGE_SIZE_OPTIONS,
+  })
+  pageSizeOptions!: number[];
+  
+  currentPage = 1;
+  pageSize = (this.defaultPageSize || consts.DEFAULT_PAGE_SIZE).toString();
+  
+  get pagesElements() {
+    let pages = Array.from(Array(this.pagesCount), (e, i) => ++i);
+    if (this.pagesCount > 5) {
+      // 1 ... 8 9 10
+      if (this.currentPage > this.pagesCount - 3) {
+        return [1, "...", ...pages.slice(pages.length - 3, pages.length)];
+      }
+      // 1 ... N ... 10
+      if (this.currentPage > 3) {
+        return [1, "...", this.currentPage, "...", this.pagesCount];
+      }
+      // 1 2 3 ... 10
+      return [...pages.slice(0, 3), "...", this.pagesCount];
     }
-    // 1 ... N ... 10
-    if (currentPage.value > 3) {
-      return [1, "...", currentPage.value, "...", props.pagesCount];
+    return pages;
+  }
+
+  pageClicked(page: number | "...") {
+    if (page === "..." || page === this.currentPage || !this.pagesCount) {
+      return;
     }
-    // 1 2 3 ... 10
-    return [...pages.slice(0, 3), "...", props.pagesCount];
+    this.currentPage = page;
+    this.$emit("change-page", page);
   }
-  return pages;
-});
-const pageClicked = (page) => {
-  if (page === "..." || page === currentPage.value || !props.pagesCount) {
-    return;
-  }
-  currentPage.value = page;
-  emit("change-page", page);
-};
 
-const changePageSize = (size) => {
-  if (pageSize.value !== size) {
-    // different page clicked
-    emit("change-page-size", size);
-  }
-  pageSize.value = size;
-};
+  changePageSize(size: string) {
+    if (this.pageSize !== size) {
+      // different page clicked
+      this.$emit("change-page-size", size);
+    }
+    this.pageSize = size;
+  };
 
-// watch pages count in case max page is scss than current page (after pageSize was changed)
-watch(() => props.pagesCount, (newCount) => pageClicked(Math.min(currentPage.value, newCount)));
+  @Watch("pagesCount")
+  watchPagesCount(newCount: number) {
+    this.pageClicked(Math.min(this.currentPage, newCount));
+  }
+}
 </script>
 
 <style lang="scss" scoped>
