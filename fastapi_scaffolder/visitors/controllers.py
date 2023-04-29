@@ -8,10 +8,11 @@ import inflect
 
 class ControllersVisitor(Visitor):
     def __init__(self):
+        super().__init__()
         self.inflect_engine = inflect.engine()
         self.models_names = []
 
-    def get_singular_of_word(self, word) -> str:
+    def _get_singular_of_word(self, word) -> str:
         return self.inflect_engine.singular_noun(word)
 
     def get_controller_name(self, operation: Operation) -> Optional[str]:
@@ -49,7 +50,7 @@ class ControllersVisitor(Visitor):
              "request.state.session"]
         )
 
-    def remove_unnecessary_models(self, models_names: List[str]) -> List[str]:
+    def _remove_unnecessary_models(self, models_names: List[str]) -> List[str]:
         """
         Filter models list
         Removing all models ending with 'error'
@@ -61,7 +62,7 @@ class ControllersVisitor(Visitor):
             name = name.lower()
             if name.endswith("error"):
                 continue
-            singular_name = self.get_singular_of_word(name)  # i.e. "users" -> "user"
+            singular_name = self._get_singular_of_word(name)  # i.e. "users" -> "user"
             if singular_name and singular_name.capitalize() in models_names:
                 # removing from list if singular version of name is found
                 continue
@@ -70,7 +71,7 @@ class ControllersVisitor(Visitor):
 
     def get_template_vars(self, parser: OpenAPIParser) -> Dict[str, object]:
         entities_names = list(parser.extra_template_data.keys())
-        self.models_names = self.remove_unnecessary_models(entities_names)
+        self.models_names = self._remove_unnecessary_models(entities_names)
         return {
             "models": self.models_names,
             "get_controller_name": self.get_controller_name,

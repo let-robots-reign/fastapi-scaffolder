@@ -30,7 +30,16 @@ class BackendGenerator:
         self.model_path = model_path or MODEL_PATH
         self.enum_field_as_literal = enum_field_as_literal
         self.custom_visitors = custom_visitors
+
         self.parser = None
+        self.environment = Environment(
+            loader=FileSystemLoader(
+                self.template_dir or f"{Path(__file__).parent}/template",
+                encoding="utf8",
+            ),
+        )
+        self.code_formatter = CodeFormatter(PythonVersion.PY_38, Path().resolve())
+        self.visitors: List[Visitor] = []
 
     def generate_code(self):
         if not self.output_dir.exists():
@@ -38,7 +47,7 @@ class BackendGenerator:
         self.generate_models()
         if not self.parser:
             return
-        self.generate_api()
+        self.generate_templates()
 
     def generate_models(self):
         self.parser = OpenAPIParser(self.input_text, enum_field_as_literal=self.enum_field_as_literal or None)
@@ -79,22 +88,13 @@ class BackendGenerator:
             if file is not None:
                 file.close()
 
-    def generate_api(self):
-        environment: Environment = Environment(
-            loader=FileSystemLoader(
-                self.template_dir or f"{Path(__file__).parent}/template",
-                encoding="utf8",
-            ),
-        )
-
+    def generate_templates(self):
         results: Dict[Path, str] = {}
-        code_formatter = CodeFormatter(PythonVersion.PY_38, Path().resolve())
 
         # vars in key-value format
         # keys are used in template, values are injected by template.render
         # initially adding info section from openapi file
         template_vars: Dict[str, object] = {"info": self.parser.parse_info()}
-        visitors: List[Visitor] = []
 
         # load visitors
         builtin_visitors = BUILTIN_VISITOR_DIR.rglob("*.py")
@@ -102,20 +102,20 @@ class BackendGenerator:
         for visitor_path in visitors_path:
             module = dynamic_load_module(visitor_path)
             if hasattr(module, "visit"):
-                visitors.append(module.visit)
+                self.visitors.append(module.visit)
             else:
                 raise Exception(f"{visitor_path.stem} does not have any visit function")
 
         # Call visitors to build template_vars
-        for visitor in visitors:
+        for visitor in self.visitors:
             visitor_result = visitor(self.parser, self.model_path)
             template_vars = {**template_vars, **visitor_result}
 
         for target in self.template_dir.rglob("*"):
             relative_path = target.relative_to(self.template_dir)
-            template = environment.get_template(str(relative_path))
+            template = self.environment.get_template(str(relative_path))
             result = template.render(template_vars)
-            results[relative_path] = code_formatter.format_code(result)
+            results[relative_path] = self.code_formatter.format_code(result)
 
         timestamp = datetime.now(timezone.utc).replace(microsecond=0).isoformat()
         header = f"""\
