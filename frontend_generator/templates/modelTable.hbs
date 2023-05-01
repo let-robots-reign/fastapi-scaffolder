@@ -1,9 +1,14 @@
 <template>
   <a-layout class="main-layout table-layout">
     <base-section with-padding>
-      <a-row type="flex" justify="space-between" align="middle" :style="{ marginBottom: '40px' }">
+      <a-row
+        type="flex"
+        justify="space-between"
+        align="middle"
+        :style="{ marginBottom: '40px' }"
+      >
         <a-col :xs="15" :offset="2">
-          <h1 class="heading">Список элементов модели {{ modelName }}</h1>
+          <h1 class="heading">Список элементов модели {{modelName}}</h1>
         </a-col>
         <a-col :xs="5" :offset="2">
           <base-button size="large" @click="createNewItem">Создать элемент</base-button>
@@ -20,9 +25,9 @@
           >
             <template #id="{ item }">
               <router-link
-                :to="{ name: 'Model Item', params: { modelName: modelName.toLowerCase(), id: item.id } }"
+                :to="{ name: '{{modelName}} Item', params: { id: item.id } }"
               >
-                {{ item.id }}
+                \{{ item.id }}
               </router-link>
             </template>
           </base-table>
@@ -44,6 +49,8 @@ import BaseModelTable from "@/components/BaseModelTable.vue";
   components: { BaseButton, BaseSection, BaseTable }
 })
 export default class ModelTable extends BaseModelTable {
+  modelName = "{{capitalize modelName}}";
+
   async getDataList() {
     try {
       // const res = await api.admin.list(this.modelName);

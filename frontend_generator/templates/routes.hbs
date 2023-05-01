@@ -1,0 +1,19 @@
+export default [
+{{#each models}}
+  {
+    path: "/{{toLowerCase @key}}/list",
+    name: "{{@key}} Table",
+    component: () => import("@/views/admin/{{@key}}Table.vue"),
+  },
+  {
+    path: "/{{toLowerCase @key}}/create",
+    name: "Create {{@key}} Item",
+    component: () => import("@/views/admin/{{@key}}Item.vue"),
+  },
+  {
+    path: "/{{toLowerCase @key}}/:id",
+    name: "{{@key}} Item",
+    component: () => import("@/views/admin/{{@key}}Item.vue"),
+  },
+{{/each}}
+];
