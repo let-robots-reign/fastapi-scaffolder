@@ -1,0 +1,153 @@
+<template>
+  <a-layout class="main-layout table-layout">
+    <base-section with-padding>
+      <a-row type="flex" justify="center">
+        <a-col :xs="20">
+          <div v-if="formMode !== 'create'" class="heading-box">
+            <h1 class="heading" >
+              Элемент {{modelName}} #\{{ itemId }}
+            </h1>
+            <base-button
+              class="button"
+              size="large"
+              danger
+              @click="deleteItem"
+            >
+              Удалить элемент
+            </base-button>
+          </div>
+          <h1 class="heading" v-else>Создание элемента {{modelName}}</h1>
+        </a-col>
+        <a-col :xs="20">
+          <a-form
+            :model="itemData"
+            name="form"
+            ref="form"
+            layout="vertical"
+          >
+            {{#each fields}}
+              <a-form-item
+                {{#if disabled}}
+                v-if="formMode !== 'create'"
+                {{/if}}
+                label="{{{label}}}"
+                :rules="rules['{{model}}']"
+              >
+                <a-{{type}}
+                  v-model="itemData['{{model}}']"
+                  {{#if placeholder}}
+                  placeholder="{{{placeholder}}}"
+                  {{/if}}
+                  {{#if disabled}}
+                  disabled
+                  {{/if}}
+                  {{#if options}}
+                  :options="getOptions({{{stringArray options}}})"
+                  {{/if}}
+                >
+                  \{{ itemData['{{model}}'] }}
+                </a-{{type}}>
+              </a-form-item>
+            {{/each}}
+          </a-form>
+        </a-col>
+        <a-col :xs="20">
+          <base-button class="button" size="large" @click="submit">Сохранить</base-button>
+          <base-button
+            class="button"
+            type="secondary"
+            size="large"
+            @click="cancelClicked"
+          >
+            Отменить
+          </base-button>
+        </a-col>
+      </a-row>
+    </base-section>
+  </a-layout>
+</template>
+
+<script lang="ts">
+import { Component } from "vue-facing-decorator";
+import BaseSection from "@/components/BaseSection.vue";
+import BaseButton from "@/components/BaseButton.vue";
+import BaseModelItem from "@/components/BaseModelItem.vue";
+
+// TODO: types, multiple selection in a-select, create form component
+
+@Component({
+  components: { BaseButton, BaseSection }
+})
+export default class ModelItem extends BaseModelItem {
+  modelName = "{{capitalize modelName}}";
+
+  rules = {
+    {{#each fields}}
+    {{#if (or required (eq type "input"))}}
+    {{model}}: [
+      {
+        {{#if required}}
+        required: true,
+        message: "Field \"{{{label}}}\" is required",
+        {{/if}}
+        {{#if (eq type "input")}}
+        type: "{{inputType}}"
+        {{/if}}
+      },
+    ],
+    {{/if}}
+    {{/each}}
+  };
+
+  async getItem() {
+    try {
+      // const itemRes = await api.admin.getOne(this.modelName, this.itemId);
+      // this.itemData = itemRes.data;
+      this.itemData = {
+        id: 1,
+        name: "John Doe",
+        skills: ["Javascript", "VueJS"],
+        email: "john.doe@gmail.com",
+        status: true
+      };
+    } catch (e) {
+      console.log(e);
+    }
+  }
+
+  submit() {
+    console.log("Submit!");
+  }
+
+  deleteItem() {
+    console.log("Delete item!");
+  }
+
+  processError() {
+    console.log("Error!");
+  }
+
+  async created() {
+    if (this.formMode !== "create") {
+      await this.getItem();
+    }
+  }
+}
+</script>
+
+<style lang="scss" scoped>
+.heading-box {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 40px;
+}
+
+.heading {
+  margin: 0;
+}
+
+.button {
+  margin-right: 20px;
+}
+</style>

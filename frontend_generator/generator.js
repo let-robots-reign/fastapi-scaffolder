@@ -9,11 +9,29 @@ class FrontendGenerator {
   }
 
   initHelpers() {
-    this.Handlebars.registerHelper('toLowerCase', function (str) {
+    const SafeString = this.Handlebars.SafeString;
+    this.Handlebars.registerHelper("toLowerCase", function (str) {
       return str.toLowerCase();
     });
-    this.Handlebars.registerHelper('capitalize', function (str) {
+    this.Handlebars.registerHelper("capitalize", function (str) {
       return str[0].toUpperCase() + str.slice(1);
+    });
+    this.Handlebars.registerHelper("stringArray", function (arr) {
+      return JSON.stringify(arr).replaceAll("\"", "'");
+    });
+    this.Handlebars.registerHelper({
+      eq: (v1, v2) => v1 === v2,
+      ne: (v1, v2) => v1 !== v2,
+      lt: (v1, v2) => v1 < v2,
+      gt: (v1, v2) => v1 > v2,
+      lte: (v1, v2) => v1 <= v2,
+      gte: (v1, v2) => v1 >= v2,
+      and() {
+        return Array.prototype.every.call(arguments, Boolean);
+      },
+      or() {
+        return Array.prototype.slice.call(arguments, 0, -1).some(Boolean);
+      }
     });
   }
 
