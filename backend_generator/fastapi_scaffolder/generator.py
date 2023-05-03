@@ -48,6 +48,8 @@ class BackendGenerator:
         if not self.parser:
             return
         self.generate_templates()
+        if self.custom_visitors:
+            self.generate_templates(self.custom_visitors)
 
     def generate_models(self):
         self.parser = OpenAPIParser(self.input_text, enum_field_as_literal=self.enum_field_as_literal or None)
@@ -88,7 +90,7 @@ class BackendGenerator:
             if file is not None:
                 file.close()
 
-    def generate_templates(self):
+    def generate_templates(self, custom_visitors: Optional[List[Path]] = None):
         results: Dict[Path, str] = {}
 
         # vars in key-value format
@@ -97,8 +99,7 @@ class BackendGenerator:
         template_vars: Dict[str, object] = {"info": self.parser.parse_info()}
 
         # load visitors
-        builtin_visitors = BUILTIN_VISITOR_DIR.rglob("*.py")
-        visitors_path = [*builtin_visitors, *(self.custom_visitors if self.custom_visitors else [])]
+        visitors_path = custom_visitors or BUILTIN_VISITOR_DIR.rglob("*.py")
         for visitor_path in visitors_path:
             module = dynamic_load_module(visitor_path)
             if hasattr(module, "visit"):
