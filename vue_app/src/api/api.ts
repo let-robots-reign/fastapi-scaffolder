@@ -5,7 +5,7 @@ class Api {
   protected readonly instance: AxiosInstance;
 
   constructor() {
-    this.baseUrl = import.meta.env.BASE_URL;
+    this.baseUrl = import.meta.env.BASE_URL || "127.0.0.1";
     this.instance = axios.create({
       baseURL: this.baseUrl,
       withCredentials: true,
@@ -37,9 +37,9 @@ class AdminApi extends Api {
     return await this.instance.get(`${this.urlPrefix}/${modelName}/${modelId}`);
   }
 
-  async getModelSchema(modelName: string) {
-    return await this.instance.get(`${this.urlPrefix}/${modelName}/schema`);
-  }
+  // async getModelSchema(modelName: string) {
+  //   return await this.instance.get(`${this.urlPrefix}/${modelName}/schema`);
+  // }
 
   async create(modelName: string, modelObject: object) {
     return await this.instance.post(`${this.urlPrefix}/${modelName}`, modelObject);

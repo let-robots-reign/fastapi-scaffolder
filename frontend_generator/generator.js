@@ -1,15 +1,23 @@
 const handlebars = require("handlebars");
 const fs = require("fs/promises");
+const axios = require("axios");
 
 class FrontendGenerator {
   constructor(templatesDir) {
     this.Handlebars = handlebars;
+    this.api = axios.create({
+      baseURL: process.env.BASE_URL || "127.0.0.1",
+      withCredentials: true,
+      headers: {
+        "Content-Type": "application/json",
+        accept: "application/json",
+      },
+    });
     this.templatesDir = templatesDir;
     this.initHelpers();
   }
 
   initHelpers() {
-    const SafeString = this.Handlebars.SafeString;
     this.Handlebars.registerHelper("toLowerCase", function (str) {
       return str.toLowerCase();
     });
@@ -57,7 +65,8 @@ class FrontendGenerator {
   }
 
   async fetchModelsInfo() {
-    // TODO: API request
+    // const { data } = await this.api.get("/models/list");
+    // return data;
     return {
       models: {
         Pet: {
