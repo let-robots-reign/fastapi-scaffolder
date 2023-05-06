@@ -1,0 +1,52 @@
+from typing import Union, get_args, get_origin, get_type_hints
+from types import UnionType
+from enum import Enum
+
+
+def get_is_optional(typing):
+    origin = get_origin(typing)
+    return (origin == Union or origin == UnionType) and get_args(typing)[1] == type(None)
+
+
+def get_is_disabled(field: str):
+    return field == "id" or field.startswith("_")
+
+
+def get_form_item_type(field_type):
+    if field_type is bool:
+        return "checkbox"
+    elif issubclass(field_type, Enum):
+        return "select"
+    return "input"
+
+
+def get_model_fields(module_name: str, model_name: str) -> dict:
+    module = __import__(module_name)
+    model_obj = getattr(module, model_name)
+
+    fields = {}
+    for field, typing in get_type_hints(model_obj).items():
+        is_optional = get_is_optional(typing)
+        is_disabled = get_is_disabled(field)
+
+        field_type = typing if not is_optional else get_args(typing)[0]
+        form_type = get_form_item_type(field_type)
+        info = {
+            "type": form_type,
+            "model": field,
+            "label": field.capitalize(),
+            "required": not is_optional,
+            "disabled": is_disabled
+        }
+        if form_type == "input":
+            info["inputType"] = "number" if field_type is int else "string"
+            if not is_disabled:
+                info["placeholder"] = f"Fill in {field}"
+        elif form_type == "select":
+            info["options"] = [prop for prop in dir(field_type) if not prop.startswith("__")]
+            if not is_disabled:
+                info["placeholder"] = f"Select {field}"
+
+        fields[field] = info
+
+    return fields

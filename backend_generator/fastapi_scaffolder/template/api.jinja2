@@ -4,8 +4,10 @@ from fastapi import FastAPI, Request, Depends
 
 {{ imports }}
 
-from .dependencies import global_get_session
-from .controllers import *
+from dependencies import global_get_session
+from controllers import *
+
+from fields import get_model_fields
 
 app = FastAPI(
     {% if info %}
@@ -19,8 +21,11 @@ app = FastAPI(
 
 {% if models %}
 @app.get("/models/list")
-async def get_models_list() -> List[str]:
-    return {{ models }}
+async def get_models_list() -> dict:
+    models = {{ models }}
+    return {
+        "models": {model_name: {"fields": get_model_fields("models", model_name)} for model_name in models}
+    }
 {% endif %}
 
 {% for operation in operations %}
