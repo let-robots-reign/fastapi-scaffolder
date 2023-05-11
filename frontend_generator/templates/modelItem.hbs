@@ -11,7 +11,7 @@
               class="button"
               size="large"
               danger
-              @click="deleteItem"
+              @click="confirmModalOpened = true"
             >
               Удалить элемент
             </base-button>
@@ -65,6 +65,27 @@
       </a-row>
     </base-section>
   </a-layout>
+  <base-modal
+    :visible="confirmModalOpened"
+    @close="closeConfirmModal"
+  >
+    <template #header>
+      <h2 class="modal-heading">Подтвердите действие</h2>
+    </template>
+    <div class="modal-body">
+      <p class="confirm-text">
+        Действительно удалить элемент
+      </p>
+      <div class="modal-buttons">
+        <base-button size="large" @click="confirmDelete">
+          ДА
+        </base-button>
+        <base-button size="large" type="secondary" @click="closeConfirmModal">
+          НЕТ
+        </base-button>
+      </div>
+    </div>
+  </base-modal>
 </template>
 
 <script lang="ts">
@@ -72,11 +93,12 @@ import { Component } from "vue-facing-decorator";
 import BaseSection from "@/components/BaseSection.vue";
 import BaseButton from "@/components/BaseButton.vue";
 import BaseModelItem from "@/components/BaseModelItem.vue";
+import BaseModal from "@/components/BaseModal.vue";
 
 // TODO: types, multiple selection in a-select, create form component
 
 @Component({
-  components: { BaseButton, BaseSection }
+  components: { BaseButton, BaseSection, BaseModal }
 })
 export default class {{capitalize modelName}}Item extends BaseModelItem {
   modelName = "{{capitalize modelName}}";
@@ -119,8 +141,10 @@ export default class {{capitalize modelName}}Item extends BaseModelItem {
     console.log("Submit!");
   }
 
-  deleteItem() {
+  confirmDelete() {
     console.log("Delete item!");
+    this.closeConfirmModal();
+    this.router.back();
   }
 
   processError() {
@@ -147,7 +171,22 @@ export default class {{capitalize modelName}}Item extends BaseModelItem {
   margin: 0;
 }
 
-.button {
-  margin-right: 20px;
+.modal-heading {
+  margin: 0;
+  font-size: 32px;
+  font-family: "Roboto", sans-serif;
+  font-weight: 600;
+}
+
+.confirm-text {
+  font-size: 18px;
+  font-family: "Roboto", sans-serif;
+  margin-bottom: 32px;
+}
+
+.modal-buttons {
+  display: flex;
+  justify-content: end;
+  column-gap: 12px;
 }
 </style>

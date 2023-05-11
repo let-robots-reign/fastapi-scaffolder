@@ -6,6 +6,7 @@ import { type Router, useRoute, useRouter } from "vue-router";
 export default class BaseModelItem extends Vue {
   itemId: number = parseInt(useRoute().params?.id as string);
   itemData: any = {};
+  confirmModalOpened: boolean = false;
   router: Router = useRouter();
 
   get formMode() {
@@ -18,6 +19,10 @@ export default class BaseModelItem extends Vue {
 
   cancelClicked() {
     this.router.back();
+  }
+
+  closeConfirmModal() {
+    this.confirmModalOpened = false;
   }
 }
 </script>
