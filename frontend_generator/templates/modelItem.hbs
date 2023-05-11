@@ -78,7 +78,7 @@ import BaseModelItem from "@/components/BaseModelItem.vue";
 @Component({
   components: { BaseButton, BaseSection }
 })
-export default class ModelItem extends BaseModelItem {
+export default class {{capitalize modelName}}Item extends BaseModelItem {
   modelName = "{{capitalize modelName}}";
 
   rules = {

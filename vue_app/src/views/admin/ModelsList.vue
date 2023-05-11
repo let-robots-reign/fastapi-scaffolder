@@ -7,7 +7,7 @@
           v-for="model in modelsList"
           :key="model"
           :name="model"
-          @click="$router.push({ name: 'Model Table', params: { modelName: model.toLowerCase() } })"
+          @click="$router.push({ name: `${model} Table`, params: { modelName: model.toLowerCase() } })"
         />
       </a-col>
     </a-row>

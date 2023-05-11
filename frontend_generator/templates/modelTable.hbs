@@ -7,10 +7,20 @@
         align="middle"
         :style="{ marginBottom: '40px' }"
       >
-        <a-col :xs="15" :offset="2">
-          <h1 class="heading">Список элементов модели {{modelName}}</h1>
+        <a-col :xs="13" :offset="2">
+          <h1 class="heading">Список элементов модели Pet</h1>
         </a-col>
-        <a-col :xs="5" :offset="2">
+        <a-col :xs="4" :style="{ textAlign: 'right' }">
+          <base-button
+            v-show="selectedRows.length > 0"
+            size="large"
+            danger
+            @click="confirmModalOpened = true"
+          >
+            Удалить элементы
+          </base-button>
+        </a-col>
+        <a-col :xs="4">
           <base-button size="large" @click="createNewItem">Создать элемент</base-button>
         </a-col>
       </a-row>
@@ -35,6 +45,27 @@
       </a-row>
     </base-section>
   </a-layout>
+  <base-modal
+    :visible="confirmModalOpened"
+    @close="closeConfirmModal"
+  >
+    <template #header>
+      <h2 class="modal-heading">Подтвердите действие</h2>
+    </template>
+    <div class="modal-body">
+      <p class="confirm-text">
+        Действительно удалить \{{ selectedRows.length }} элементов
+      </p>
+      <div class="modal-buttons">
+        <base-button size="large" @click="confirmDelete">
+          ДА
+        </base-button>
+        <base-button size="large" type="secondary" @click="closeConfirmModal">
+          НЕТ
+        </base-button>
+      </div>
+    </div>
+  </base-modal>
 </template>
 
 <script lang="ts">
@@ -42,13 +73,14 @@ import { Component } from "vue-facing-decorator";
 import BaseTable from "@/components/BaseTable.vue";
 import BaseSection from "@/components/BaseSection.vue";
 import BaseButton from "@/components/BaseButton.vue";
+import BaseModal from "@/components/BaseModal.vue";
 import BaseModelTable from "@/components/BaseModelTable.vue";
 // import api from "@/api/api";
 
 @Component({
-  components: { BaseButton, BaseSection, BaseTable }
+  components: { BaseButton, BaseSection, BaseTable, BaseModal }
 })
-export default class ModelTable extends BaseModelTable {
+export default class {{capitalize modelName}}Table extends BaseModelTable {
   modelName = "{{capitalize modelName}}";
 
   async getDataList() {
@@ -89,6 +121,12 @@ export default class ModelTable extends BaseModelTable {
   created() {
     this.getDataList();
   }
+
+  confirmDelete() {
+    // TODO: delete many
+    this.selectedRows.splice(0);
+    this.closeConfirmModal();
+  }
 }
 </script>
 
@@ -99,5 +137,24 @@ export default class ModelTable extends BaseModelTable {
 
 .heading {
   margin: 0;
+}
+
+.modal-heading {
+  margin: 0;
+  font-size: 32px;
+  font-family: "Roboto", sans-serif;
+  font-weight: 600;
+}
+
+.confirm-text {
+  font-size: 18px;
+  font-family: "Roboto", sans-serif;
+  margin-bottom: 32px;
+}
+
+.modal-buttons {
+  display: flex;
+  justify-content: end;
+  column-gap: 12px;
 }
 </style>

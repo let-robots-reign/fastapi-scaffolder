@@ -10,6 +10,7 @@ export default class BaseModelTable extends Vue {
   columns: Object[] = [];
   selectedRows: number[] = [];
   selectAll: boolean = false;
+  confirmModalOpened: boolean = false;
   router: Router = useRouter();
 
   getColumnsFromData() {
@@ -47,6 +48,10 @@ export default class BaseModelTable extends Vue {
       }
       this.selectAll = false;
     }
+  }
+
+  closeConfirmModal() {
+    this.confirmModalOpened = false;
   }
 }
 </script>
