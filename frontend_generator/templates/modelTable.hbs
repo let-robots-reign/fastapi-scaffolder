@@ -8,7 +8,7 @@
         :style="{ marginBottom: '40px' }"
       >
         <a-col :xs="13" :offset="2">
-          <h1 class="heading">Список элементов модели Pet</h1>
+          <h1 class="heading">Список элементов модели {{modelName}}</h1>
         </a-col>
         <a-col :xs="4" :style="{ textAlign: 'right' }">
           <base-button
@@ -87,27 +87,111 @@ export default class {{capitalize modelName}}Table extends BaseModelTable {
     try {
       // const res = await api.admin.list(this.modelName);
       // this.data = res.data;
+
+      // this.data = [
+      //   {
+      //     id: 1,
+      //     name: "Roach",
+      //     animal: "Horse",
+      //     age: 8,
+      //     color: "black",
+      //     doctor: "Mr. Smith",
+      //     owner: "Mr. Green",
+      //   },
+      //   {
+      //     id: 2,
+      //     name: "Jack",
+      //     animal: "Dog",
+      //     age: 8,
+      //     color: "brown",
+      //     doctor: "Mrs. Finch",
+      //     owner: "Mr. Tyler",
+      //   },
+      // ];
+
       this.data = [
         {
           id: 1,
-          name: "Roach",
-          animal: "Horse",
-          age: 8,
-          color: "black",
-          doctor: "Mr. Smith",
-          owner: "Mr. Green",
+          name: "Sherlock",
+          surname: "Holmes",
+          age: 35,
+          email: "sherlock@ed.com",
+          address: "Baker St., 221B"
         },
         {
           id: 2,
-          name: "Jack",
-          animal: "Dog",
-          age: 8,
-          color: "brown",
-          doctor: "Mrs. Finch",
-          owner: "Mr. Tyler",
+          name: "Harry",
+          surname: "Potter",
+          age: 11,
+          email: "harry@hg.tz",
+          address: "Privet Drive, 4"
+        },
+        {
+          id: 3,
+          name: "John",
+          surname: "Smith",
+          age: 90,
+          email: "john@who.com",
+          address: "Tardis"
+        },
+        {
+          id: 4,
+          name: "Ben",
+          surname: "Larson",
+          age: 24,
+          email: "bsheep@gmail.com",
+          address: "Quebec, Canada"
+        },
+        {
+          id: 5,
+          name: "Peter",
+          surname: "Parker",
+          age: 17,
+          email: "p.parker@gmail.com",
+          address: "Queens, NYC",
+        },
+        {
+          id: 6,
+          name: "Bartholomew",
+          surname: "Monroe",
+          age: 29,
+          email: "guitarplayer_hit1995@gmail.com",
+          address: "Jacksonville, Florida, US"
+        },
+        {
+          id: 7,
+          name: "Barney",
+          surname: "Stinson",
+          age: 31,
+          email: "suit@up.com",
+          address: "Manhattan, NYC"
+        },
+        {
+          id: 8,
+          name: "Emily",
+          surname: "Green",
+          age: 45,
+          email: "lawconsult@yahoo.com",
+          address: "844 Benson Park Drive, Oklahoma"
+        },
+        {
+          id: 9,
+          name: "Sarah",
+          surname: "Walker",
+          age: 36,
+          email: "walkwithme@gmail.com",
+          address: "4450 Fincham Road, Palm Springs"
+        },
+        {
+          id: 10,
+          name: "Regina",
+          surname: "Thomas",
+          age: 34,
+          email: "regFLmas@gmail.com",
+          address: "170 Drainer Avenue, Chipley, FL"
         },
       ];
-      this.total = this.data.length;
+      this.total = this.data.length * 10;
       this.columns = this.getColumnsFromData();
     } catch (e) {
       console.log(`Error getting list of ${this.modelName}:`, e);
@@ -115,7 +199,7 @@ export default class {{capitalize modelName}}Table extends BaseModelTable {
   }
 
   createNewItem() {
-    this.router.push({ name: "Create Model Item", params: { modelName: this.modelName }});
+    this.router.push({ name: "Create {{modelName}} Item" });
   }
 
   created() {

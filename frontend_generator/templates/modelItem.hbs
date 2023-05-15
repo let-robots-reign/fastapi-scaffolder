@@ -4,7 +4,7 @@
       <a-row type="flex" justify="center">
         <a-col :xs="20">
           <div v-if="formMode !== 'create'" class="heading-box">
-            <h1 class="heading" >
+            <h1 class="heading">
               Элемент {{modelName}} #\{{ itemId }}
             </h1>
             <base-button
@@ -16,7 +16,7 @@
               Удалить элемент
             </base-button>
           </div>
-          <h1 class="heading" v-else>Создание элемента {{modelName}}</h1>
+          <h1 class="heading heading-create" v-else>Создание элемента {{modelName}}</h1>
         </a-col>
         <a-col :xs="20">
           <a-form
@@ -31,10 +31,11 @@
                 v-if="formMode !== 'create'"
                 {{/if}}
                 label="{{{label}}}"
+                name="{{model}}"
                 :rules="rules['{{model}}']"
               >
                 <a-{{type}}
-                  v-model="itemData['{{model}}']"
+                  v-model:value="itemData['{{model}}']"
                   {{#if placeholder}}
                   placeholder="{{{placeholder}}}"
                   {{/if}}
@@ -44,15 +45,20 @@
                   {{#if options}}
                   :options="getOptions({{{stringArray options}}})"
                   {{/if}}
-                >
-                  \{{ itemData['{{model}}'] }}
-                </a-{{type}}>
+                />
               </a-form-item>
             {{/each}}
           </a-form>
         </a-col>
         <a-col :xs="20">
-          <base-button class="button" size="large" @click="submit">Сохранить</base-button>
+          <base-button
+            class="button"
+            size="large"
+            :style="{ marginRight: '16px' }"
+            @click="submit"
+          >
+            Сохранить
+          </base-button>
           <base-button
             class="button"
             type="secondary"
@@ -125,12 +131,22 @@ export default class {{capitalize modelName}}Item extends BaseModelItem {
     try {
       // const itemRes = await api.admin.getOne(this.modelName, this.itemId);
       // this.itemData = itemRes.data;
+
+      // this.itemData = {
+      //   id: 1,
+      //   name: "John Doe",
+      //   skills: ["Javascript", "VueJS"],
+      //   email: "john.doe@gmail.com",
+      //   status: true
+      // };
+
       this.itemData = {
         id: 1,
-        name: "John Doe",
-        skills: ["Javascript", "VueJS"],
-        email: "john.doe@gmail.com",
-        status: true
+        name: "Sherlock",
+        surname: "Holmes",
+        age: "35",
+        email: "sherlock@ed.com",
+        address: "Baker St., 221B"
       };
     } catch (e) {
       console.log(e);
@@ -139,6 +155,7 @@ export default class {{capitalize modelName}}Item extends BaseModelItem {
 
   submit() {
     console.log("Submit!");
+    this.router.back();
   }
 
   confirmDelete() {
@@ -169,6 +186,10 @@ export default class {{capitalize modelName}}Item extends BaseModelItem {
 
 .heading {
   margin: 0;
+}
+
+.heading-create {
+  margin: 0 0 32px 0;
 }
 
 .modal-heading {

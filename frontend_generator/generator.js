@@ -69,6 +69,53 @@ class FrontendGenerator {
     // return data;
     return {
       models: {
+        User: {
+          fields: [
+            {
+              type: "input",
+              inputType: "string",
+              label: "ID",
+              model: "id",
+              disabled: true
+            },
+            {
+              type: "input",
+              inputType: "string",
+              label: "Name",
+              model: "name",
+              placeholder: "Fill in name",
+              required: true
+            },
+            {
+              type: "input",
+              inputType: "string",
+              label: "Surname",
+              model: "surname",
+              placeholder: "Fill in surname",
+            },
+            {
+              type: "input",
+              inputType: "number",
+              label: "Age",
+              model: "age",
+            },
+            {
+              type: "input",
+              inputType: "string",
+              label: "Email",
+              model: "email",
+              placeholder: "Fill in email",
+            },
+            {
+              type: "input",
+              inputType: "string",
+              label: "Address",
+              model: "address",
+              placeholder: "Fill in address",
+              required: true,
+            },
+          ],
+        },
         Pet: {
           fields: [
             {
@@ -97,7 +144,7 @@ class FrontendGenerator {
               inputType: "email",
               label: "E-mail",
               model: "email",
-              placeholder: "User's e-mail address"
+              placeholder: "E-mail address"
             },
             {
               type: "checkbox",

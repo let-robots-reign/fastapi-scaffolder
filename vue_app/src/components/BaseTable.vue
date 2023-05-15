@@ -153,12 +153,14 @@ export default class BaseTable extends Vue {
     field: "",
     direction: "",
   };
-  tableParams = {
-    sort: this.currentSorter,
-    pagination: {
-      currentPage: 1,
-      pageSize: this.defaultPageSize,
-    },
+  get tableParams() {
+    return {
+      sort: this.currentSorter,
+      pagination: {
+        currentPage: 1,
+        pageSize: this.defaultPageSize,
+      },
+    }
   };
 
   get pagesCount() {
