@@ -432,8 +432,7 @@ class OpenAPIParser(OpenAPIModelParser):
         raw_operation: Dict[str, Any],
         path: List[str],
     ) -> None:
-        self._temporary_operation = {}
-        self._temporary_operation['_parameters'] = []
+        self._temporary_operation = {'_parameters': []}
         super().parse_operation(raw_operation, path)
         resolved_path = self.model_resolver.resolve_ref(path)
         path_name, method = path[-2:]
